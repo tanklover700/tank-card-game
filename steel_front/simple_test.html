@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-4">游戏测试</h1>
+        <div id="testResults"></div>
+        
+        <!-- 游戏模式选择界面 -->
+        <div id="gameModeSelection" class="flex flex-col items-center justify-center mb-8">
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg max-w-md w-full">
+                <h2 class="text-2xl font-bold mb-6 text-center">选择游戏模式</h2>
+                <div class="grid grid-cols-1 gap-4">
+                    <button id="playAgainstAI" class="bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 text-white font-bold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center shadow-lg">
+                        <i class="fa fa-robot mr-3 text-xl"></i> 回合制对战
+                    </button>
+                    <button id="playRoyalMode" class="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-bold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center shadow-lg">
+                        <i class="fa fa-clock-o mr-3 text-xl"></i> 持续对战
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function log(message) {
+            const results = document.getElementById('testResults');
+            results.innerHTML += `<p>${message}</p>`;
+            console.log(message);
+        }
+        
+        // 模拟游戏状态
+        let gameState = {
+            currentView: 'menu',
+            gameMode: 'turn-based'
+        };
+        
+        // 模拟DOM元素
+        const elements = {
+            gameModeSelection: document.getElementById('gameModeSelection'),
+            playAgainstAI: document.getElementById('playAgainstAI'),
+            playRoyalMode: document.getElementById('playRoyalMode')
+        };
+        
+        // 模拟显示视图函数
+        function showView(viewName) {
+            log(`显示视图: ${viewName}`);
+            gameState.currentView = viewName;
+        }
+        
+        // 模拟设置事件监听器
+        function setupEventListeners() {
+            try {
+                log('设置事件监听器...');
+                
+                if (elements.playAgainstAI) {
+                    elements.playAgainstAI.addEventListener('click', () => {
+                        log('点击了回合制对战');
+                        gameState.gameMode = 'turn-based';
+                        showView('commanderSelection');
+                    });
+                    log('✓ 回合制对战按钮事件监听器设置成功');
+                } else {
+                    log('✗ 回合制对战按钮不存在');
+                }
+                
+                if (elements.playRoyalMode) {
+                    elements.playRoyalMode.addEventListener('click', () => {
+                        log('点击了持续对战');
+                        gameState.gameMode = 'royal';
+                        showView('commanderSelection');
+                    });
+                    log('✓ 持续对战按钮事件监听器设置成功');
+                } else {
+                    log('✗ 持续对战按钮不存在');
+                }
+                
+                log('事件监听器设置完成');
+            } catch (error) {
+                log(`设置事件监听器时出错: ${error.message}`);
+            }
+        }
+        
+        // 模拟初始化游戏
+        function initGame() {
+            try {
+                log('初始化游戏...');
+                setupEventListeners();
+                showView('menu');
+                log('游戏初始化成功');
+            } catch (error) {
+                log(`初始化游戏时出错: ${error.message}`);
+            }
+        }
+        
+        // 测试
+        window.addEventListener('DOMContentLoaded', function() {
+            log('DOM加载完成');
+            initGame();
+        });
+    </script>
+</body>
+</html>

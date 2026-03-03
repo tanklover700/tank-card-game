@@ -1,0 +1,339 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 游戏容器 */
+.game-container {
+    width: 100%;
+    max-width: 1200px;
+    height: 800px;
+    background-color: #2c2c2c;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    display: grid;
+    grid-template-rows: 100px 1fr 100px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+        "opponent-info opponent-info"
+        "battlefield battlefield"
+        "player-info player-info";
+}
+
+/* 对手信息区域 */
+.opponent-info {
+    grid-area: opponent-info;
+    background-color: #333333;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.opponent-hand {
+    display: flex;
+    gap: 10px;
+}
+
+.opponent-field {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    justify-content: center;
+}
+
+/* 玩家信息区域 */
+.player-info {
+    grid-area: player-info;
+    background-color: #333333;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.player-hand {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    overflow-x: auto;
+    padding: 10px 0;
+}
+
+.player-field {
+    display: flex;
+    gap: 10px;
+}
+
+/* 战场区域 */
+.battlefield {
+    grid-area: battlefield;
+    background-color: #1a1a1a;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.turn-info {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.turn-count {
+    font-size: 16px;
+    color: #cccccc;
+    margin-top: 5px;
+}
+
+/* 卡牌样式 */
+.card {
+    width: 120px;
+    height: 180px;
+    border-radius: 8px;
+    padding: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-back {
+    background-color: #555555;
+    border: 2px solid #777777;
+}
+
+.card.tank {
+    background-color: #2a4d69;
+    border: 2px solid #4a90e2;
+}
+
+.card.terrain {
+    background-color: #4a693f;
+    border: 2px solid #82c341;
+}
+
+.card.support {
+    background-color: #693f4a;
+    border: 2px solid #e24a4a;
+}
+
+.card.commander {
+    background-color: #694a3f;
+    border: 2px solid #e2a44a;
+}
+
+/* 卡牌图片 */
+.card-image {
+    width: 100%;
+    height: 80px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 卡牌文本 */
+.card-name {
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-country {
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 5px;
+    color: #cccccc;
+}
+
+.card-type {
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 5px;
+    color: #cccccc;
+}
+
+.card-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.card-stats span {
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.card-stats .cost {
+    background-color: #ffcc00;
+    color: #000000;
+}
+
+.card-stats .attack {
+    background-color: #ff3300;
+    color: #ffffff;
+}
+
+.card-stats .health {
+    background-color: #00cc00;
+    color: #000000;
+}
+
+.card-stats .duration {
+    background-color: #9966ff;
+    color: #ffffff;
+}
+
+.card-ability {
+    font-size: 12px;
+    text-align: center;
+    color: #cccccc;
+    line-height: 1.2;
+}
+
+.card-effect {
+    font-size: 12px;
+    text-align: center;
+    color: #cccccc;
+    line-height: 1.2;
+}
+
+/* 按钮样式 */
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.end-turn-btn {
+    background-color: #4a90e2;
+    color: #ffffff;
+}
+
+/* 指挥官信息 */
+.commander-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.commander-info .health {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff3300;
+}
+
+.commander-info .fuel {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffcc00;
+}
+
+/* 地形效果区域 */
+.terrain-effects {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.terrain-effect {
+    width: 100px;
+    height: 150px;
+}
+
+/* 响应式调整 */
+@media (max-width: 1024px) {
+    .card {
+        width: 100px;
+        height: 150px;
+    }
+    
+    .card-name {
+        font-size: 12px;
+    }
+    
+    .card-ability, .card-effect {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .game-container {
+        height: 600px;
+    }
+    
+    .card {
+        width: 80px;
+        height: 120px;
+    }
+    
+    .card-image {
+        height: 60px;
+    }
+    
+    .card-name {
+        font-size: 10px;
+    }
+    
+    .card-ability, .card-effect {
+        font-size: 8px;
+    }
+    
+    .turn-info {
+        font-size: 18px;
+    }
+}

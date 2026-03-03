@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试开始游戏</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white p-4">
+    <h1 class="text-2xl font-bold mb-4">测试开始游戏</h1>
+    <div id="testResults"></div>
+    
+    <script>
+        function log(message) {
+            const results = document.getElementById('testResults');
+            results.innerHTML += `<p>${message}</p>`;
+            console.log(message);
+        }
+        
+        // 模拟游戏状态
+        let gameState = {
+            currentView: 'mapSelection',
+            gameMode: 'turn-based',
+            playerCommander: null,
+            opponentCommander: null,
+            selectedTerrain: null,
+            selectedTime: null,
+            playerDeck: [],
+            opponentDeck: []
+        };
+        
+        // 模拟指挥官数据
+        const commandersData = [
+            {
+                id: "commander_american_general",
+                name: "约翰·史密斯",
+                nation: "america",
+                health: 50,
+                skill: {
+                    name: "美式装甲突击",
+                    description: "每回合可让1个美国坦克攻击力+3（本回合有效）",
+                    type: "buff_attack",
+                    value: 3
+                },
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=American%20military%20general%20portrait%20front%20face%20in%20uniform%20official%20photo&image_size=square",
+                flavorText: "约翰·史密斯是虚构的美国将军，以装甲部队战术著称。"
+            }
+        ];
+        
+        // 模拟创建默认卡组
+        function createDefaultDeck() {
+            return [
+                {
+                    id: "tank_1",
+                    name: "测试坦克",
+                    type: "tank",
+                    attack: 5,
+                    health: 5,
+                    cost: 3
+                }
+            ];
+        }
+        
+        // 模拟洗牌
+        function shuffleDeck(deck) {
+            return deck;
+        }
+        
+        // 模拟初始化游戏状态
+        function initGameState() {
+            log('初始化游戏状态...');
+            gameState.playerHealth = 50;
+            gameState.opponentHealth = 50;
+            gameState.playerFuel = 3;
+            gameState.opponentFuel = 3;
+            gameState.playerMaxFuel = 3;
+            gameState.opponentMaxFuel = 3;
+            gameState.currentTurn = 1;
+            gameState.activePlayer = 'player';
+            gameState.selectedAttacker = null;
+            gameState.isAttackMode = false;
+            
+            gameState.playerDeck = shuffleDeck(gameState.playerDeck);
+            gameState.opponentDeck = createDefaultDeck();
+            
+            gameState.playerHand = [];
+            gameState.opponentHand = [];
+            
+            for (let i = 0; i < 4; i++) {
+                if (gameState.playerDeck.length > 0) {
+                    gameState.playerHand.push(gameState.playerDeck.pop());
+                }
+                if (gameState.opponentDeck.length > 0) {
+                    gameState.opponentHand.push(gameState.opponentDeck.pop());
+                }
+            }
+            
+            gameState.playerFrontRow = [];
+            gameState.playerBackRow = [];
+            gameState.opponentFrontRow = [];
+            gameState.opponentBackRow = [];
+            
+            gameState.playerTerrain = null;
+            gameState.opponentTerrain = null;
+            gameState.playerTerrainDuration = 0;
+            gameState.opponentTerrainDuration = 0;
+            
+            log('游戏状态初始化成功');
+        }
+        
+        // 模拟显示视图
+        function showView(viewName) {
+            log(`显示视图: ${viewName}`);
+            gameState.currentView = viewName;
+        }
+        
+        // 模拟更新指挥官显示
+        function updateCommanderDisplay() {
+            log('更新指挥官显示...');
+            if (gameState.playerCommander) {
+                log(`玩家指挥官: ${gameState.playerCommander.name}`);
+            }
+            if (gameState.opponentCommander) {
+                log(`对手指挥官: ${gameState.opponentCommander.name}`);
+            }
+            log('指挥官显示更新成功');
+        }
+        
+        // 模拟开始游戏循环
+        function startGameLoop() {
+            log('开始游戏循环...');
+        }
+        
+        // 模拟开始持续对战模式游戏循环
+        function startRoyalGameLoop() {
+            log('开始持续对战模式游戏循环...');
+        }
+        
+        // 模拟开始游戏
+        function startGame() {
+            log('开始游戏...');
+            
+            // 如果没有选择指挥官，直接返回
+            if (!gameState.playerCommander) {
+                log('错误: 请先选择指挥官！');
+                return;
+            }
+            
+            // 随机选择对手指挥官
+            log('选择对手指挥官...');
+            const availableCommanders = commandersData.filter(c => c.id !== gameState.playerCommander.id);
+            gameState.opponentCommander = availableCommanders[Math.floor(Math.random() * availableCommanders.length)];
+            log(`对手指挥官: ${gameState.opponentCommander.name}`);
+            
+            // 从本地存储加载玩家卡组
+            log('加载玩家卡组...');
+            const savedDeck = localStorage.getItem('playerDeck');
+            if (savedDeck) {
+                log('从本地存储加载卡组');
+                gameState.playerDeck = JSON.parse(savedDeck);
+            } else {
+                // 如果没有保存的卡组，使用默认卡组
+                log('使用默认卡组');
+                gameState.playerDeck = createDefaultDeck();
+            }
+            
+            // 初始化游戏状态
+            initGameState();
+            
+            // 显示游戏界面
+            showView('gameBoard');
+            
+            // 更新指挥官显示
+            updateCommanderDisplay();
+            
+            // 开始游戏循环
+            log('开始游戏循环...');
+            if (gameState.gameMode === 'royal') {
+                startRoyalGameLoop();
+            } else {
+                startGameLoop();
+            }
+            
+            log('游戏开始成功！');
+        }
+        
+        // 测试
+        window.addEventListener('DOMContentLoaded', function() {
+            log('DOM加载完成');
+            
+            // 测试1: 没有选择指挥官
+            log('<h3>测试1: 没有选择指挥官</h3>');
+            startGame();
+            
+            // 测试2: 选择指挥官
+            log('<h3>测试2: 选择指挥官</h3>');
+            gameState.playerCommander = commandersData[0];
+            startGame();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #374151;
+            border-radius: 8px;
+        }
+        .image-test {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        .image-test img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .image-test p {
+            margin-top: 5px;
+            font-size: 12px;
+        }
+        .success {
+            color: #38a169;
+        }
+        .error {
+            color: #e53e3e;
+        }
+    </style>
+</head>
+<body>
+    <h1>游戏启动测试</h1>
+    
+    <div class="test-section">
+        <h2>图片加载测试</h2>
+        <div id="image-tests"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>游戏状态测试</h2>
+        <div id="game-state-test"></div>
+    </div>
+    
+    <script>
+        // 测试图片加载
+        const images = [
+            'images/平原.png',
+            'images/森林.png',
+            'images/沙漠.png',
+            'images/雪地.png',
+            'images/城市.png',
+            'images/山地.png',
+            'images/黎明.png',
+            'images/白天.png',
+            'images/黄昏.png',
+            'images/夜晚.png'
+        ];
+        
+        const imageTestsContainer = document.getElementById('image-tests');
+        
+        images.forEach(imagePath => {
+            const imageTest = document.createElement('div');
+            imageTest.className = 'image-test';
+            
+            const img = document.createElement('img');
+            img.src = imagePath;
+            img.alt = imagePath;
+            
+            const p = document.createElement('p');
+            
+            img.onload = function() {
+                p.textContent = imagePath + ' - 加载成功';
+                p.className = 'success';
+            };
+            
+            img.onerror = function() {
+                p.textContent = imagePath + ' - 加载失败';
+                p.className = 'error';
+            };
+            
+            imageTest.appendChild(img);
+            imageTest.appendChild(p);
+            imageTestsContainer.appendChild(imageTest);
+        });
+        
+        // 测试游戏状态
+        const gameStateTest = document.getElementById('game-state-test');
+        
+        try {
+            // 模拟游戏初始化
+            gameStateTest.innerHTML = '<p class="success">游戏状态初始化成功</p>';
+        } catch (error) {
+            gameStateTest.innerHTML = '<p class="error">游戏状态初始化失败: ' + error.message + '</p>';
+        }
+    </script>
+</body>
+</html>

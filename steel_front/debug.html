@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏调试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-4">
+    <h1 class="text-2xl font-bold mb-4">游戏调试</h1>
+    <div id="debugOutput"></div>
+    
+    <script>
+        function log(message) {
+            const output = document.getElementById('debugOutput');
+            output.innerHTML += `<p>${message}</p>`;
+            console.log(message);
+        }
+        
+        function debugGame() {
+            log('开始调试游戏...');
+            
+            // 检查DOM元素
+            log('<h3>检查DOM元素</h3>');
+            const requiredElements = [
+                'gameModeSelection',
+                'playAgainstAI',
+                'playRoyalMode',
+                'buildDeck',
+                'cardCollection',
+                'tutorial',
+                'commanderSelection',
+                'commanderList',
+                'backFromCommander',
+                'mapSelection',
+                'terrainList',
+                'timeList',
+                'backFromMap',
+                'confirmMap',
+                'gameBoard',
+                'playerHealth',
+                'opponentHealth',
+                'playerFuel',
+                'opponentFuel',
+                'endTurnBtn',
+                'turnIndicator',
+                'turnCounter'
+            ];
+            
+            let allElementsExist = true;
+            requiredElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    log(`✓ ${id} 存在`);
+                } else {
+                    log(`✗ ${id} 不存在`);
+                    allElementsExist = false;
+                }
+            });
+            
+            // 检查游戏状态
+            log('<h3>检查游戏状态</h3>');
+            if (typeof gameState !== 'undefined') {
+                log('✓ gameState 对象存在');
+                log('游戏模式: ' + gameState.gameMode);
+            } else {
+                log('✗ gameState 对象不存在');
+            }
+            
+            // 检查函数
+            log('<h3>检查函数</h3>');
+            const requiredFunctions = [
+                'initGame',
+                'setupEventListeners',
+                'showView',
+                'startGame',
+                'initGameState',
+                'updateGameUI'
+            ];
+            
+            requiredFunctions.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    log(`✓ ${funcName} 函数存在`);
+                } else {
+                    log(`✗ ${funcName} 函数不存在`);
+                }
+            });
+            
+            // 尝试初始化游戏
+            log('<h3>尝试初始化游戏</h3>');
+            try {
+                if (typeof initGame === 'function') {
+                    initGame();
+                    log('✓ 游戏初始化成功');
+                } else {
+                    log('✗ 无法初始化游戏，initGame 函数不存在');
+                }
+            } catch (error) {
+                log(`✗ 初始化游戏时出错: ${error.message}`);
+            }
+        }
+        
+        // 等待DOM加载完成
+        window.addEventListener('DOMContentLoaded', function() {
+            log('DOM加载完成，开始调试...');
+            // 延迟一下，确保所有脚本都已加载
+            setTimeout(debugGame, 1000);
+        });
+    </script>
+</body>
+</html>

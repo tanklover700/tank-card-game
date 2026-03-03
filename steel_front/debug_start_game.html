@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试开始游戏</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .debug-section {
+            background-color: #2d3748;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .debug-button {
+            background-color: #3182ce;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .debug-button:hover {
+            background-color: #2c5282;
+        }
+        .debug-log {
+            background-color: #1a202c;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            color: #38a169;
+        }
+        .error {
+            color: #e53e3e;
+        }
+        .info {
+            color: #3182ce;
+        }
+    </style>
+</head>
+<body>
+    <h1>调试开始游戏</h1>
+    
+    <div class="debug-section">
+        <h2>测试步骤</h2>
+        <button class="debug-button" onclick="testLocalStorage()">测试本地存储</button>
+        <button class="debug-button" onclick="testCardData()">测试卡牌数据</button>
+        <button class="debug-button" onclick="testCommanderData()">测试指挥官数据</button>
+        <button class="debug-button" onclick="testTerrainData()">测试地形数据</button>
+        <button class="debug-button" onclick="testTimeData()">测试时间数据</button>
+        <button class="debug-button" onclick="testStartGame()">测试开始游戏</button>
+    </div>
+    
+    <div class="debug-section">
+        <h2>调试日志</h2>
+        <div id="debugLog" class="debug-log"></div>
+    </div>
+    
+    <script>
+        // 简化的卡牌数据
+        const cardsData = [
+            {
+                id: "germany_tiger_i",
+                name: "虎式坦克",
+                type: "tank",
+                nation: "germany",
+                era: "ww2",
+                cost: 6,
+                attack: 4,
+                health: 6,
+                effect: {
+                    type: "armor_reinforce",
+                    value: 1,
+                    description: "装甲强化：受到的物理伤害-1。"
+                },
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Bundesarchiv_Bild_101I-299-0329-08%2C_Panzer_VI_%28Tiger_I%29.jpg/800px-Bundesarchiv_Bild_101I-299-0329-08%2C_Panzer_VI_%28Tiger_I%29.jpg",
+                flavorText: "虎式坦克是二战期间德国最著名的重型坦克之一，以其强大的火力和厚重的装甲而闻名。",
+                rarity: "legendary"
+            },
+            {
+                id: "soviet_t34_85",
+                name: "T-34-85坦克",
+                type: "tank",
+                nation: "soviet",
+                era: "ww2",
+                cost: 5,
+                attack: 3,
+                health: 5,
+                effect: {
+                    type: "synergy",
+                    value: 1,
+                    description: "协同作战：场上每有1个其他苏联坦克，攻击力+1。"
+                },
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=t34-card-b11f056537ed667f4ca390e39f07230f,military",
+                flavorText: "T-34-85是二战中苏联最著名的中型坦克，以其优秀的机动性和可靠性著称。",
+                rarity: "epic"
+            }
+        ];
+        
+        // 简化的指挥官数据
+        const commandersData = [
+            {
+                id: "commander_american_general",
+                name: "约翰·史密斯",
+                nation: "america",
+                health: 50,
+                skill: {
+                    name: "美式装甲突击",
+                    description: "每回合可让1个美国坦克攻击力+3（本回合有效）",
+                    type: "buff_attack",
+                    value: 3
+                },
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=American%20military%20general%20portrait%20front%20face%20in%20uniform%20official%20photo&image_size=square",
+                flavorText: "约翰·史密斯是虚构的美国将军，以装甲部队战术著称。"
+            },
+            {
+                id: "commander_russian_general",
+                name: "伊万·彼得罗夫",
+                nation: "russia",
+                health: 50,
+                skill: {
+                    name: "俄罗斯钢铁意志",
+                    description: "每回合可让1个俄罗斯坦克生命值+3",
+                    type: "buff_health",
+                    value: 3
+                },
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Russian%20military%20general%20portrait%20front%20face%20in%20uniform%20official%20photo&image_size=square",
+                flavorText: "伊万·彼得罗夫是虚构的俄罗斯将军，以其强势的领导风格和对国家利益的坚决维护而闻名。"
+            }
+        ];
+        
+        // 简化的地形数据
+        const terrainsData = [
+            {
+                id: "terrain_plains",
+                name: "平原",
+                description: "开阔地带，中型坦克攻击力+1",
+                effects: [
+                    { type: "tank_type", tankType: "medium", stat: "attack", value: 1 }
+                ],
+                image: "images/平原.png"
+            },
+            {
+                id: "terrain_forest",
+                name: "森林",
+                description: "隐蔽地带，轻型坦克闪避率+30%",
+                effects: [
+                    { type: "tank_type", tankType: "light", stat: "dodge", value: 30 }
+                ],
+                image: "images/森林.png"
+            }
+        ];
+        
+        // 简化的时间数据
+        const timesData = [
+            {
+                id: "time_dawn",
+                name: "黎明",
+                description: "清晨时分，所有坦克攻击力+1",
+                effects: [
+                    { type: "all", stat: "attack", value: 1 }
+                ],
+                image: "images/黎明.png"
+            },
+            {
+                id: "time_day",
+                name: "白天",
+                description: "正午时分，视野清晰，无特殊效果",
+                effects: [],
+                image: "images/白天.png"
+            }
+        ];
+        
+        // 游戏状态
+        let gameState = {
+            playerCommander: null,
+            opponentCommander: null,
+            selectedTerrain: null,
+            selectedTime: null,
+            playerDeck: [],
+            opponentDeck: [],
+            gameMode: 'turn-based'
+        };
+        
+        // 日志函数
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `<span class="${type}">[${timestamp}] ${message}</span>\n`;
+            logDiv.innerHTML += logEntry;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        // 测试本地存储
+        function testLocalStorage() {
+            log('测试本地存储...', 'info');
+            try {
+                // 测试存储
+                localStorage.setItem('test', 'test value');
+                log('存储测试成功', 'success');
+                
+                // 测试读取
+                const value = localStorage.getItem('test');
+                if (value === 'test value') {
+                    log('读取测试成功', 'success');
+                } else {
+                    log('读取测试失败', 'error');
+                }
+                
+                // 测试删除
+                localStorage.removeItem('test');
+                const deletedValue = localStorage.getItem('test');
+                if (deletedValue === null) {
+                    log('删除测试成功', 'success');
+                } else {
+                    log('删除测试失败', 'error');
+                }
+            } catch (error) {
+                log(`本地存储测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 测试卡牌数据
+        function testCardData() {
+            log('测试卡牌数据...', 'info');
+            try {
+                if (cardsData && cardsData.length > 0) {
+                    log(`卡牌数据加载成功，共 ${cardsData.length} 张卡牌`, 'success');
+                    log(`第一张卡牌: ${cardsData[0].name}`, 'info');
+                } else {
+                    log('卡牌数据加载失败', 'error');
+                }
+            } catch (error) {
+                log(`卡牌数据测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 测试指挥官数据
+        function testCommanderData() {
+            log('测试指挥官数据...', 'info');
+            try {
+                if (commandersData && commandersData.length > 0) {
+                    log(`指挥官数据加载成功，共 ${commandersData.length} 位指挥官`, 'success');
+                    log(`第一位指挥官: ${commandersData[0].name}`, 'info');
+                } else {
+                    log('指挥官数据加载失败', 'error');
+                }
+            } catch (error) {
+                log(`指挥官数据测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 测试地形数据
+        function testTerrainData() {
+            log('测试地形数据...', 'info');
+            try {
+                if (terrainsData && terrainsData.length > 0) {
+                    log(`地形数据加载成功，共 ${terrainsData.length} 种地形`, 'success');
+                    log(`第一种地形: ${terrainsData[0].name}`, 'info');
+                    // 测试本地图片路径
+                    const img = new Image();
+                    img.onload = function() {
+                        log(`地形图片加载成功: ${terrainsData[0].image}`, 'success');
+                    };
+                    img.onerror = function() {
+                        log(`地形图片加载失败: ${terrainsData[0].image}`, 'error');
+                    };
+                    img.src = terrainsData[0].image;
+                } else {
+                    log('地形数据加载失败', 'error');
+                }
+            } catch (error) {
+                log(`地形数据测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 测试时间数据
+        function testTimeData() {
+            log('测试时间数据...', 'info');
+            try {
+                if (timesData && timesData.length > 0) {
+                    log(`时间数据加载成功，共 ${timesData.length} 种时间`, 'success');
+                    log(`第一种时间: ${timesData[0].name}`, 'info');
+                    // 测试本地图片路径
+                    const img = new Image();
+                    img.onload = function() {
+                        log(`时间图片加载成功: ${timesData[0].image}`, 'success');
+                    };
+                    img.onerror = function() {
+                        log(`时间图片加载失败: ${timesData[0].image}`, 'error');
+                    };
+                    img.src = timesData[0].image;
+                } else {
+                    log('时间数据加载失败', 'error');
+                }
+            } catch (error) {
+                log(`时间数据测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 创建默认卡组
+        function createDefaultDeck() {
+            const defaultDeck = [];
+            const availableCards = cardsData.filter(card => card.type !== 'commander');
+            
+            // 确保卡组中有各种类型的卡牌
+            // 10张坦克卡
+            for (let i = 0; i < 10; i++) {
+                const tankCards = availableCards.filter(card => card.type === 'tank');
+                if (tankCards.length > 0) {
+                    const randomCard = tankCards[Math.floor(Math.random() * tankCards.length)];
+                    defaultDeck.push(randomCard);
+                }
+            }
+            
+            return defaultDeck;
+        }
+        
+        // 测试开始游戏
+        function testStartGame() {
+            log('测试开始游戏...', 'info');
+            try {
+                // 设置测试数据
+                gameState.playerCommander = commandersData[0];
+                gameState.selectedTerrain = terrainsData[0];
+                gameState.selectedTime = timesData[1];
+                
+                log(`玩家指挥官: ${gameState.playerCommander.name}`, 'info');
+                log(`选择的地形: ${gameState.selectedTerrain.name}`, 'info');
+                log(`选择的时间: ${gameState.selectedTime.name}`, 'info');
+                
+                // 随机选择对手指挥官
+                const availableCommanders = commandersData.filter(c => c.id !== gameState.playerCommander.id);
+                gameState.opponentCommander = availableCommanders[Math.floor(Math.random() * availableCommanders.length)];
+                log(`对手指挥官: ${gameState.opponentCommander.name}`, 'info');
+                
+                // 从本地存储加载玩家卡组
+                try {
+                    const savedDeck = localStorage.getItem('playerDeck');
+                    if (savedDeck) {
+                        log('从本地存储加载卡组', 'info');
+                        gameState.playerDeck = JSON.parse(savedDeck);
+                        log(`加载了 ${gameState.playerDeck.length} 张卡牌`, 'success');
+                    } else {
+                        // 如果没有保存的卡组，使用默认卡组
+                        log('使用默认卡组', 'info');
+                        gameState.playerDeck = createDefaultDeck();
+                        log(`创建了 ${gameState.playerDeck.length} 张卡牌的默认卡组`, 'success');
+                    }
+                } catch (error) {
+                    log(`加载卡组时出错: ${error.message}`, 'error');
+                    log('使用默认卡组', 'info');
+                    gameState.playerDeck = createDefaultDeck();
+                    log(`创建了 ${gameState.playerDeck.length} 张卡牌的默认卡组`, 'success');
+                }
+                
+                // 初始化对手卡组
+                gameState.opponentDeck = createDefaultDeck();
+                log(`对手卡组创建成功，共 ${gameState.opponentDeck.length} 张卡牌`, 'success');
+                
+                log('开始游戏测试成功！', 'success');
+            } catch (error) {
+                log(`开始游戏测试失败: ${error.message}`, 'error');
+                console.error('开始游戏测试失败:', error);
+            }
+        }
+        
+        // 页面加载时自动测试
+        window.onload = function() {
+            log('页面加载完成，开始自动测试...', 'info');
+            testLocalStorage();
+            testCardData();
+            testCommanderData();
+            testTerrainData();
+            testTimeData();
+            testStartGame();
+        };
+    </script>
+</body>
+</html>

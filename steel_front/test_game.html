@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-4">
+    <h1 class="text-2xl font-bold mb-4">游戏测试</h1>
+    <div id="testResults"></div>
+    
+    <script>
+        function log(message) {
+            const results = document.getElementById('testResults');
+            results.innerHTML += `<p>${message}</p>`;
+        }
+        
+        // 测试DOM元素是否存在
+        function testElements() {
+            const elements = {
+                playAgainstAI: document.getElementById('playAgainstAI'),
+                playRoyalMode: document.getElementById('playRoyalMode'),
+                confirmMap: document.getElementById('confirmMap'),
+                playerHealth: document.getElementById('playerHealth'),
+                opponentHealth: document.getElementById('opponentHealth'),
+                playerFuel: document.getElementById('playerFuel'),
+                opponentFuel: document.getElementById('opponentFuel'),
+                endTurnBtn: document.getElementById('endTurnBtn'),
+                turnIndicator: document.getElementById('turnIndicator'),
+                turnCounter: document.getElementById('turnCounter')
+            };
+            
+            for (const [key, element] of Object.entries(elements)) {
+                if (element) {
+                    log(`✓ ${key} 元素存在`);
+                } else {
+                    log(`✗ ${key} 元素不存在`);
+                }
+            }
+        }
+        
+        // 测试游戏状态
+        function testGameState() {
+            log('<h3>游戏状态测试</h3>');
+            log('游戏状态对象已创建');
+            log('游戏模式: ' + (gameState ? gameState.gameMode : '未定义'));
+        }
+        
+        // 测试开始游戏函数
+        function testStartGame() {
+            log('<h3>开始游戏测试</h3>');
+            if (typeof startGame === 'function') {
+                log('✓ startGame 函数存在');
+            } else {
+                log('✗ startGame 函数不存在');
+            }
+        }
+        
+        // 运行测试
+        window.onload = function() {
+            log('<h2>DOM元素测试</h2>');
+            testElements();
+            log('<h2>游戏状态测试</h2>');
+            testGameState();
+            log('<h2>函数测试</h2>');
+            testStartGame();
+        };
+    </script>
+</body>
+</html>
